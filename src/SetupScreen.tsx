@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import FranchiseBanner from './FranchiseBanner';
 import type { Franchise } from './franchises';
 
 export type GameConfig = {
@@ -31,7 +32,7 @@ export default function SetupScreen({
       <Pressable onPress={onBack}>
         <Text style={s.back}>← Cambiar categoría</Text>
       </Pressable>
-      <Text style={s.title}>{franchise.name}</Text>
+      <FranchiseBanner id={franchise.id} height={150} />
 
       <Text style={s.label}>Jugadores</Text>
       <TextInput style={s.input} placeholder="Jugador 1" placeholderTextColor="#889" value={p1} onChangeText={setP1} />
