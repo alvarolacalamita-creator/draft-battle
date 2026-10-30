@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Auction } from './auction';
-import { getVerdict, Verdict } from './verdict';
+import { getStoredKey, getVerdict, saveKey, Verdict } from './verdict';
 
 export default function ResultsScreen({
   auction,
@@ -16,7 +16,10 @@ export default function ResultsScreen({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [apiKey, setApiKey] = useState(getStoredKey());
+
   const judge = () => {
+    if (apiKey.trim() !== getStoredKey()) saveKey(apiKey);
     setLoading(true);
     setError(null);
     getVerdict(franchiseName, auction)
@@ -57,6 +60,18 @@ export default function ResultsScreen({
         </View>
       ))}
 
+      {!verdict && !getStoredKey() && (
+        <TextInput
+          style={s.input}
+          placeholder="Pega aquí tu clave de Anthropic (solo una vez)"
+          placeholderTextColor="#889"
+          value={apiKey}
+          onChangeText={setApiKey}
+          autoCapitalize="none"
+          autoCorrect={false}
+          secureTextEntry
+        />
+      )}
       {error && <Text style={s.error}>{error}</Text>}
       {loading ? (
         <ActivityIndicator size="large" color="#ffb703" style={{ marginVertical: 20 }} />
@@ -86,6 +101,7 @@ const s = StyleSheet.create({
   img: { width: 70, height: 70 },
   name: { color: '#fff', fontSize: 16, fontWeight: '700' },
   summary: { color: '#aab', fontSize: 13, marginTop: 2 },
+  input: { backgroundColor: '#1c1d33', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
   error: { color: '#ff6b6b', textAlign: 'center', marginBottom: 12 },
   btn: { backgroundColor: '#e63946', padding: 18, borderRadius: 12, alignItems: 'center', marginTop: 8 },
   btnText: { color: '#fff', fontSize: 18, fontWeight: '700' },

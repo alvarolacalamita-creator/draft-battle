@@ -1,11 +1,14 @@
 {
   "expo": {
-    "name": "draft-battle",
+    "name": "Draft Battle",
     "slug": "draft-battle",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "experiments": {
+      "baseUrl": "/draft-battle"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -19,7 +22,14 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "Draft Battle",
+      "shortName": "Draft Battle",
+      "backgroundColor": "#0f1020",
+      "themeColor": "#0f1020",
+      "display": "standalone"
     }
   }
 }

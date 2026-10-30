@@ -1,7 +1,22 @@
 import type { Auction } from './auction';
 
-const API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY;
 const MODEL = 'claude-sonnet-5-5';
+const KEY_NAME = 'anthropic_api_key';
+
+// La clave se guarda solo en el navegador del móvil; nunca va dentro del código.
+export function getStoredKey(): string {
+  try {
+    return globalThis.localStorage?.getItem(KEY_NAME) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+export function saveKey(key: string) {
+  try {
+    globalThis.localStorage?.setItem(KEY_NAME, key.trim());
+  } catch {}
+}
 
 export type Verdict = {
   winner: 0 | 1 | null; // null = empate
@@ -10,7 +25,8 @@ export type Verdict = {
 };
 
 export async function getVerdict(franchiseName: string, auction: Auction): Promise<Verdict> {
-  if (!API_KEY) throw new Error('Falta la clave EXPO_PUBLIC_ANTHROPIC_API_KEY (ver .env.example)');
+  const apiKey = getStoredKey();
+  if (!apiKey) throw new Error('Primero pega tu clave de Anthropic');
 
   const teams = auction.players
     .map((p, i) => `Equipo ${i} (${p.name}): ${p.team.map((c) => c.name).join(', ')}`)
@@ -33,8 +49,9 @@ Donde "winner" es 0 o 1 según el equipo ganador, o null si hay empate. "analysi
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-api-key': API_KEY,
+      'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: MODEL,
