@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { FRANCHISES, Franchise } from './franchises';
+import type { Franchise } from './franchises';
 
 export type GameConfig = {
   franchise: Franchise;
@@ -10,15 +10,25 @@ export type GameConfig = {
 
 const BUDGETS = [20, 30, 40, 50];
 
-export default function SetupScreen({ onStart }: { onStart: (c: GameConfig) => void }) {
-  const [franchise, setFranchise] = useState(FRANCHISES[0]);
+export default function SetupScreen({
+  franchise,
+  onStart,
+  onBack,
+}: {
+  franchise: Franchise;
+  onStart: (c: GameConfig) => void;
+  onBack: () => void;
+}) {
   const [budget, setBudget] = useState(30);
   const [p1, setP1] = useState('');
   const [p2, setP2] = useState('');
 
   return (
     <ScrollView contentContainerStyle={s.container}>
-      <Text style={s.title}>Draft Battle</Text>
+      <Pressable onPress={onBack}>
+        <Text style={s.back}>← Cambiar categoría</Text>
+      </Pressable>
+      <Text style={s.title}>{franchise.name}</Text>
 
       <Text style={s.label}>Jugadores</Text>
       <TextInput style={s.input} placeholder="Jugador 1" placeholderTextColor="#889" value={p1} onChangeText={setP1} />
@@ -27,14 +37,9 @@ export default function SetupScreen({ onStart }: { onStart: (c: GameConfig) => v
       <Text style={s.label}>Monedas iniciales</Text>
       <View style={s.row}>
         {BUDGETS.map((b) => (
-          <Chip key={b} text={String(b)} active={b === budget} onPress={() => setBudget(b)} />
-        ))}
-      </View>
-
-      <Text style={s.label}>Anime</Text>
-      <View style={s.row}>
-        {FRANCHISES.map((f) => (
-          <Chip key={f.id} text={f.name} active={f.id === franchise.id} onPress={() => setFranchise(f)} />
+          <Pressable key={b} onPress={() => setBudget(b)} style={[s.chip, b === budget && s.chipActive]}>
+            <Text style={[s.chipText, b === budget && s.chipTextActive]}>{b}</Text>
+          </Pressable>
         ))}
       </View>
 
@@ -48,17 +53,10 @@ export default function SetupScreen({ onStart }: { onStart: (c: GameConfig) => v
   );
 }
 
-function Chip({ text, active, onPress }: { text: string; active: boolean; onPress: () => void }) {
-  return (
-    <Pressable onPress={onPress} style={[s.chip, active && s.chipActive]}>
-      <Text style={[s.chipText, active && s.chipTextActive]}>{text}</Text>
-    </Pressable>
-  );
-}
-
 const s = StyleSheet.create({
   container: { padding: 20, paddingTop: 70, backgroundColor: '#0f1020', minHeight: '100%' },
-  title: { color: '#fff', fontSize: 34, fontWeight: '800', marginBottom: 24 },
+  back: { color: '#ffb703', fontSize: 15, marginBottom: 16 },
+  title: { color: '#fff', fontSize: 34, fontWeight: '800', marginBottom: 12 },
   label: { color: '#aab', fontSize: 14, marginTop: 20, marginBottom: 8, textTransform: 'uppercase' },
   input: { backgroundColor: '#1c1d33', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

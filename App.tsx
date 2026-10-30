@@ -3,13 +3,17 @@ import { StatusBar } from 'expo-status-bar';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { Auction } from './src/auction';
 import AuctionScreen from './src/AuctionScreen';
+import CategoryScreen from './src/CategoryScreen';
+import type { Franchise } from './src/franchises';
 import SetupScreen, { GameConfig } from './src/SetupScreen';
 
 export default function App() {
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [result, setResult] = useState<Auction | null>(null);
+  const [franchise, setFranchise] = useState<Franchise | null>(null);
 
   const reset = () => {
+    setFranchise(null);
     setConfig(null);
     setResult(null);
   };
@@ -40,8 +44,10 @@ export default function App() {
         </ScrollView>
       ) : config ? (
         <AuctionScreen config={config} onFinish={setResult} />
+      ) : franchise ? (
+        <SetupScreen franchise={franchise} onStart={setConfig} onBack={() => setFranchise(null)} />
       ) : (
-        <SetupScreen onStart={setConfig} />
+        <CategoryScreen onPick={setFranchise} />
       )}
     </View>
   );
