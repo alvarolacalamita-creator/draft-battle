@@ -53,11 +53,18 @@ async function jikanPool(malId: number): Promise<Character[]> {
 
 /** AniList es rápida y devuelve solo los populares; si falla, se usa Jikan. */
 async function animePool(malId: number): Promise<Character[]> {
+  let anilistError = 'devolvió pocos personajes';
   try {
     const pool = await anilistPool(malId);
     if (pool.length >= 8) return pool;
-  } catch {}
-  return jikanPool(malId);
+  } catch (e: any) {
+    anilistError = String(e?.message ?? e);
+  }
+  try {
+    return await jikanPool(malId);
+  } catch (e: any) {
+    throw new Error(`AniList: ${anilistError} | Jikan: ${String(e?.message ?? e)}`);
+  }
 }
 
 // La lista de personajes populares se guarda en el móvil para que las siguientes partidas carguen al instante.
