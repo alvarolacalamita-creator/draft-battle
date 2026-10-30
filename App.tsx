@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 import type { Auction } from './src/auction';
 import AuctionScreen from './src/AuctionScreen';
 import CategoryScreen from './src/CategoryScreen';
 import type { Franchise } from './src/franchises';
+import ResultsScreen from './src/ResultsScreen';
 import SetupScreen, { GameConfig } from './src/SetupScreen';
 
 export default function App() {
+  const [franchise, setFranchise] = useState<Franchise | null>(null);
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [result, setResult] = useState<Auction | null>(null);
-  const [franchise, setFranchise] = useState<Franchise | null>(null);
 
   const reset = () => {
     setFranchise(null);
@@ -21,27 +22,8 @@ export default function App() {
   return (
     <View style={{ flex: 1, backgroundColor: '#0f1020' }}>
       <StatusBar style="light" />
-      {result ? (
-        <ScrollView contentContainerStyle={s.results}>
-          <Text style={s.title}>Equipos</Text>
-          {result.players.map((p) => (
-            <View key={p.name} style={s.team}>
-              <Text style={s.player}>{p.name} · {p.coins} 🪙 sobran</Text>
-              <View style={s.grid}>
-                {p.team.map((c) => (
-                  <View key={c.id} style={s.card}>
-                    <Image source={{ uri: c.image }} style={s.img} resizeMode="contain" />
-                    <Text style={s.name}>{c.name}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          ))}
-          <Text style={s.note}>(Siguiente paso: que la IA decida quién ganaría)</Text>
-          <Pressable onPress={reset}>
-            <Text style={s.link}>Nueva partida</Text>
-          </Pressable>
-        </ScrollView>
+      {result && config ? (
+        <ResultsScreen auction={result} franchiseName={config.franchise.name} onNewGame={reset} />
       ) : config ? (
         <AuctionScreen config={config} onFinish={setResult} />
       ) : franchise ? (
@@ -52,16 +34,3 @@ export default function App() {
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  results: { padding: 20, paddingTop: 60 },
-  title: { color: '#fff', fontSize: 30, fontWeight: '800', marginBottom: 16 },
-  team: { marginBottom: 24 },
-  player: { color: '#ffb703', fontSize: 18, fontWeight: '700', marginBottom: 8 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  card: { width: '48%', backgroundColor: '#1c1d33', borderRadius: 10, padding: 8, alignItems: 'center' },
-  img: { width: '100%', height: 120 },
-  name: { color: '#fff', marginTop: 6, textAlign: 'center' },
-  note: { color: '#aab', textAlign: 'center', marginTop: 8 },
-  link: { color: '#ffb703', textAlign: 'center', marginTop: 16, fontSize: 16 },
-});
