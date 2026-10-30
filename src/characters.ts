@@ -56,7 +56,7 @@ async function animePool(malId: number): Promise<Character[]> {
   let anilistError = 'devolvió pocos personajes';
   try {
     const pool = await anilistPool(malId);
-    if (pool.length >= 8) return pool;
+    if (pool.length >= 10) return pool;
   } catch (e: any) {
     anilistError = String(e?.message ?? e);
   }
@@ -75,7 +75,7 @@ async function cachedPool(key: string, load: () => Promise<Character[]>): Promis
     const saved = globalThis.localStorage?.getItem(CACHE_PREFIX + key);
     if (saved) {
       const pool = JSON.parse(saved) as Character[];
-      if (pool.length >= 8) return pool;
+      if (pool.length >= 10) return pool;
     }
   } catch {}
   const pool = await load();
@@ -111,6 +111,7 @@ export async function fetchCharacters(f: Franchise, count = 8): Promise<Characte
         id: String(p.id),
         name: cap(p.name),
         image: p.sprites.other['official-artwork'].front_default ?? p.sprites.front_default,
+        tags: (p.types as any[]).sort((a, b) => a.slot - b.slot).map((t) => t.type.name as string),
       }));
     }
     case 'starwars': {

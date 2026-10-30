@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Auction } from './auction';
+import TagChips from './TagChips';
 import { getStoredKey, getVerdict, saveKey, Verdict } from './verdict';
 
 export default function ResultsScreen({
@@ -53,6 +54,9 @@ export default function ResultsScreen({
               <Image source={{ uri: c.image }} style={s.img} resizeMode="contain" />
               <View style={{ flex: 1 }}>
                 <Text style={s.name}>{c.name}</Text>
+                <View style={{ alignItems: 'flex-start' }}>
+                  <TagChips tags={c.tags} small />
+                </View>
                 {summaryOf(c.name) && <Text style={s.summary}>{summaryOf(c.name)}</Text>}
               </View>
             </View>

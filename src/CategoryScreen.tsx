@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { FRANCHISES, Franchise } from './franchises';
 
-export const APP_VERSION = '4';
+export const APP_VERSION = '5';
 
 const COLORS: Record<string, string> = {
   onepiece: '#e63946',

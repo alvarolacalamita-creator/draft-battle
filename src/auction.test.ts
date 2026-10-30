@@ -43,3 +43,15 @@ while (h.players[0].team.length < 4 && !h.done) {
 assert.ok(h.done);
 assert.equal(h.players[0].team.length + h.players[1].team.length, 8);
 console.log('ok');
+
+// Partidas de 6 (3 cada uno) y 10 (5 cada uno)
+for (const size of [3, 5]) {
+  const q = chars.concat(chars).slice(0, size * 2).map((c, i) => ({ ...c, id: String(i) }));
+  let t = startAuction(['A', 'B'], 20, q, size);
+  let n = 0;
+  while (!t.done && n++ < 1000) t = Math.random() < 0.5 && canBid(t) ? raise(t) : pass(t);
+  assert.ok(t.done);
+  assert.equal(t.players[0].team.length, size);
+  assert.equal(t.players[1].team.length, size);
+}
+console.log('ok tamaños');

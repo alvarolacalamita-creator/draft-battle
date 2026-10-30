@@ -1,4 +1,4 @@
-export type Character = { id: string; name: string; image: string };
+export type Character = { id: string; name: string; image: string; tags?: string[] };
 export type PlayerState = { name: string; coins: number; team: Character[] };
 export type PlayerIdx = 0 | 1;
 

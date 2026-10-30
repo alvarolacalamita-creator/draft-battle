@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Auction, canBid, pass, PlayerIdx, raise, startAuction } from './auction';
 import { fetchCharacters } from './characters';
+import { typeLabel } from './pokemonTypes';
 import type { GameConfig } from './SetupScreen';
+import TagChips from './TagChips';
 
 export default function AuctionScreen({
   config,
@@ -18,8 +20,8 @@ export default function AuctionScreen({
   useEffect(() => {
     setAuction(null);
     setError(null);
-    fetchCharacters(config.franchise)
-      .then((chars) => setAuction(startAuction(config.players, config.budget, chars)))
+    fetchCharacters(config.franchise, config.total)
+      .then((chars) => setAuction(startAuction(config.players, config.budget, chars, config.total / 2)))
       .catch((e) => setError(String(e.message ?? e)));
   }, [config, attempt]);
 
@@ -66,6 +68,12 @@ export default function AuctionScreen({
             <Text style={s.playerName}>{auction.players[i].name}</Text>
             <Text style={s.coins}>🪙 {auction.players[i].coins}</Text>
             <Text style={s.small}>Equipo {auction.players[i].team.length}/{auction.teamSize}</Text>
+            {auction.players[i].team.map((c) => (
+              <Text key={c.id} style={s.pick} numberOfLines={1}>
+                {c.name}
+                {c.tags?.length ? ` · ${c.tags.map(typeLabel).join('/')}` : ''}
+              </Text>
+            ))}
           </View>
         ))}
       </View>
@@ -75,6 +83,9 @@ export default function AuctionScreen({
       </Text>
       <Image source={{ uri: current.image }} style={s.image} resizeMode="contain" />
       <Text style={s.title}>{current.name}</Text>
+      <View style={{ marginTop: 8 }}>
+        <TagChips tags={current.tags} />
+      </View>
 
       <Text style={s.bid}>{auction.bid > 0 ? `Puja: ${auction.bid} 🪙 · ${leaderName}` : 'Sin pujas todavía'}</Text>
       <Text style={s.small}>Turno de {turnName}</Text>
@@ -103,6 +114,7 @@ const s = StyleSheet.create({
   scoreActive: { borderColor: '#ffb703' },
   playerName: { color: '#fff', fontWeight: '700', fontSize: 16 },
   coins: { color: '#ffb703', fontSize: 22, fontWeight: '800' },
+  pick: { color: '#ccd', fontSize: 11, marginTop: 2 },
   image: { width: '100%', flex: 1, marginVertical: 12 },
   title: { color: '#fff', fontSize: 28, fontWeight: '800', textAlign: 'center' },
   text: { color: '#fff', fontSize: 17, textAlign: 'center' },

@@ -5,10 +5,12 @@ import type { Franchise } from './franchises';
 export type GameConfig = {
   franchise: Franchise;
   budget: number;
+  total: number; // personajes en la subasta (la mitad para cada jugador)
   players: [string, string];
 };
 
 const BUDGETS = [20, 30, 40, 50];
+const TOTALS = [6, 8, 10];
 
 export default function SetupScreen({
   franchise,
@@ -20,6 +22,7 @@ export default function SetupScreen({
   onBack: () => void;
 }) {
   const [budget, setBudget] = useState(30);
+  const [total, setTotal] = useState(8);
   const [p1, setP1] = useState('');
   const [p2, setP2] = useState('');
 
@@ -43,9 +46,20 @@ export default function SetupScreen({
         ))}
       </View>
 
+      <Text style={s.label}>Personajes en la partida</Text>
+      <View style={s.row}>
+        {TOTALS.map((t) => (
+          <Pressable key={t} onPress={() => setTotal(t)} style={[s.chip, t === total && s.chipActive]}>
+            <Text style={[s.chipText, t === total && s.chipTextActive]}>
+              {t} ({t / 2} cada uno)
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
       <Pressable
         style={s.start}
-        onPress={() => onStart({ franchise, budget, players: [p1.trim() || 'Jugador 1', p2.trim() || 'Jugador 2'] })}
+        onPress={() => onStart({ franchise, budget, total, players: [p1.trim() || 'Jugador 1', p2.trim() || 'Jugador 2'] })}
       >
         <Text style={s.startText}>Empezar partida</Text>
       </Pressable>
