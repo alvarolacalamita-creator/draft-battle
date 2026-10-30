@@ -28,6 +28,7 @@ export const THEMES: Record<string, Theme> = {
       textShadowRadius: 12,
     },
     logo: logo('Star_Wars_Logo.svg'),
+    logoLocal: require('../assets/logos/starwars.png'),
     logoTint: '#ffe81f',
     Decor: Stars,
   },
