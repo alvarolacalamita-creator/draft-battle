@@ -2,9 +2,36 @@ import type { Character } from './auction';
 import type { Franchise } from './franchises';
 
 async function getJson(url: string) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`${res.status} al pedir ${url}`);
-  return res.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`${res.status} al pedir ${url}`);
+    return await res.json();
+  } catch (e: any) {
+    if (e?.name === 'AbortError') throw new Error('El servidor de personajes tarda demasiado, prueba de nuevo');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// La lista de personajes populares se guarda en el móvil para que las siguientes partidas carguen al instante.
+const CACHE_PREFIX = 'pool_v1_';
+
+async function cachedPool(key: string, load: () => Promise<Character[]>): Promise<Character[]> {
+  try {
+    const saved = globalThis.localStorage?.getItem(CACHE_PREFIX + key);
+    if (saved) {
+      const pool = JSON.parse(saved) as Character[];
+      if (pool.length >= 8) return pool;
+    }
+  } catch {}
+  const pool = await load();
+  try {
+    globalThis.localStorage?.setItem(CACHE_PREFIX + key, JSON.stringify(pool));
+  } catch {}
+  return pool;
 }
 
 function sample<T>(items: T[], n: number): T[] {
@@ -22,16 +49,20 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export async function fetchCharacters(f: Franchise, count = 8): Promise<Character[]> {
   switch (f.source.type) {
     case 'jikan': {
-      const json = await getJson(`https://api.jikan.moe/v4/anime/${f.source.malId}/characters`);
-      const pool = (json.data as any[])
-        .filter((d) => d.character?.images?.jpg?.image_url && !d.character.images.jpg.image_url.includes('questionmark'))
-        .sort((a, b) => b.favorites - a.favorites)
-        .slice(0, 60); // los 60 más populares, para que salgan personajes reconocibles
-      return sample(pool, count).map((d) => ({
-        id: String(d.character.mal_id),
-        name: d.character.name,
-        image: d.character.images.jpg.image_url,
-      }));
+      const malId = f.source.malId;
+      const pool = await cachedPool(f.id, async () => {
+        const json = await getJson(`https://api.jikan.moe/v4/anime/${malId}/characters`);
+        return (json.data as any[])
+          .filter((d) => d.character?.images?.jpg?.image_url && !d.character.images.jpg.image_url.includes('questionmark'))
+          .sort((a, b) => b.favorites - a.favorites)
+          .slice(0, 60) // los 60 más populares, para que salgan personajes reconocibles
+          .map((d) => ({
+            id: String(d.character.mal_id),
+            name: d.character.name,
+            image: d.character.images.jpg.image_url,
+          }));
+      });
+      return sample(pool, count);
     }
     case 'pokeapi': {
       const ids = sample(Array.from({ length: 898 }, (_, i) => i + 1), count);
@@ -43,11 +74,11 @@ export async function fetchCharacters(f: Franchise, count = 8): Promise<Characte
       }));
     }
     case 'starwars': {
-      const all = (await getJson('https://akabab.github.io/starwars-api/api/all.json')) as any[];
-      return sample(
-        all.filter((c) => c.image),
-        count,
-      ).map((c) => ({ id: String(c.id), name: c.name, image: c.image }));
+      const pool = await cachedPool(f.id, async () => {
+        const all = (await getJson('https://akabab.github.io/starwars-api/api/all.json')) as any[];
+        return all.filter((c) => c.image).map((c) => ({ id: String(c.id), name: c.name, image: c.image }));
+      });
+      return sample(pool, count);
     }
   }
 }
