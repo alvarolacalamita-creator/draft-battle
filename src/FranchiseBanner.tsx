@@ -10,6 +10,7 @@ type Theme = {
   gradient: [string, string, ...string[]];
   text: TextStyle;
   logo: string;
+  logoLocal?: number; // logo incluido en la app (assets/logos); tiene prioridad sobre el remoto
   logoTint?: string; // colorea el logo si el original no contrasta con el fondo
   Decor: (p: { height: number }) => React.ReactElement;
 };
@@ -32,7 +33,7 @@ export const THEMES: Record<string, Theme> = {
   },
   onepiece: {
     title: 'One Piece',
-    gradient: ['#4fc3f7', '#0288d1', '#01579b'],
+    gradient: ['#fff3d6', '#f1d9a7', '#d9b77a'],
     text: {
       fontFamily: 'PirataOne_400Regular',
       fontSize: 48,
@@ -42,6 +43,7 @@ export const THEMES: Record<string, Theme> = {
       textShadowRadius: 1,
     },
     logo: logo('One_Piece_Logo.svg'),
+    logoLocal: require('../assets/logos/onepiece.png'),
     Decor: Sea,
   },
   naruto: {
@@ -100,14 +102,20 @@ export default function FranchiseBanner({ id, height = 120 }: { id: string; heig
     <LinearGradient colors={theme.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[s.banner, { height }]}>
       <Decor height={height} />
       <View style={s.content}>
-        {!logoOk && <Text style={theme.text}>{theme.title}</Text>}
-        <Image
-          source={{ uri: theme.logo }}
-          style={logoOk ? { width: '62%', height: height * 0.62, tintColor: theme.logoTint } : s.hidden}
-          resizeMode="contain"
-          onLoad={() => setLogoOk(true)}
-          onError={() => setLogoOk(false)}
-        />
+        {theme.logoLocal ? (
+          <Image source={theme.logoLocal} style={{ width: '68%', height: height * 0.7 }} resizeMode="contain" />
+        ) : (
+          <>
+            {!logoOk && <Text style={theme.text}>{theme.title}</Text>}
+            <Image
+              source={{ uri: theme.logo }}
+              style={logoOk ? { width: '62%', height: height * 0.62, tintColor: theme.logoTint } : s.hidden}
+              resizeMode="contain"
+              onLoad={() => setLogoOk(true)}
+              onError={() => setLogoOk(false)}
+            />
+          </>
+        )}
       </View>
     </LinearGradient>
   );
@@ -148,7 +156,7 @@ function Stars({ height }: { height: number }) {
 function Sea({ height }: { height: number }) {
   return (
     <View style={StyleSheet.absoluteFill}>
-      <Text style={[s.bigEmoji, { right: 10, top: height * 0.12, fontSize: height * 0.62, opacity: 0.22 }]}>☠️</Text>
+      <Text style={[s.bigEmoji, { right: 10, top: height * 0.12, fontSize: height * 0.62, opacity: 0.12 }]}>☠️</Text>
       {[0, 1, 2, 3].map((i) => (
         <View
           key={i}
@@ -159,7 +167,7 @@ function Sea({ height }: { height: number }) {
             width: height * 1.2,
             height: height * 1.2,
             borderRadius: height,
-            backgroundColor: 'rgba(255,255,255,0.12)',
+            backgroundColor: 'rgba(120,80,30,0.10)',
           }}
         />
       ))}
