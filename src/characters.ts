@@ -16,6 +16,50 @@ async function getJson(url: string) {
   }
 }
 
+async function anilistPool(malId: number): Promise<Character[]> {
+  const query = `query($id:Int){Media(idMal:$id,type:ANIME){characters(sort:FAVOURITES_DESC,perPage:50){nodes{id name{full} image{large}}}}}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch('https://graphql.anilist.co', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ query, variables: { id: malId } }),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`AniList ${res.status}`);
+    const json = await res.json();
+    const nodes: any[] = json?.data?.Media?.characters?.nodes ?? [];
+    return nodes
+      .filter((n) => n.image?.large && !n.image.large.includes('default'))
+      .map((n) => ({ id: String(n.id), name: n.name.full, image: n.image.large }));
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function jikanPool(malId: number): Promise<Character[]> {
+  const json = await getJson(`https://api.jikan.moe/v4/anime/${malId}/characters`);
+  return (json.data as any[])
+    .filter((d) => d.character?.images?.jpg?.image_url && !d.character.images.jpg.image_url.includes('questionmark'))
+    .sort((a, b) => b.favorites - a.favorites)
+    .slice(0, 60) // los más populares, para que salgan personajes reconocibles
+    .map((d) => ({
+      id: String(d.character.mal_id),
+      name: d.character.name,
+      image: d.character.images.jpg.image_url,
+    }));
+}
+
+/** AniList es rápida y devuelve solo los populares; si falla, se usa Jikan. */
+async function animePool(malId: number): Promise<Character[]> {
+  try {
+    const pool = await anilistPool(malId);
+    if (pool.length >= 8) return pool;
+  } catch {}
+  return jikanPool(malId);
+}
+
 // La lista de personajes populares se guarda en el móvil para que las siguientes partidas carguen al instante.
 const CACHE_PREFIX = 'pool_v1_';
 
@@ -50,18 +94,7 @@ export async function fetchCharacters(f: Franchise, count = 8): Promise<Characte
   switch (f.source.type) {
     case 'jikan': {
       const malId = f.source.malId;
-      const pool = await cachedPool(f.id, async () => {
-        const json = await getJson(`https://api.jikan.moe/v4/anime/${malId}/characters`);
-        return (json.data as any[])
-          .filter((d) => d.character?.images?.jpg?.image_url && !d.character.images.jpg.image_url.includes('questionmark'))
-          .sort((a, b) => b.favorites - a.favorites)
-          .slice(0, 60) // los 60 más populares, para que salgan personajes reconocibles
-          .map((d) => ({
-            id: String(d.character.mal_id),
-            name: d.character.name,
-            image: d.character.images.jpg.image_url,
-          }));
-      });
+      const pool = await cachedPool(f.id, () => animePool(malId));
       return sample(pool, count);
     }
     case 'pokeapi': {
