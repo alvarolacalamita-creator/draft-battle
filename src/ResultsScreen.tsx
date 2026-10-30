@@ -94,18 +94,18 @@ export default function ResultsScreen({
 }
 
 const s = StyleSheet.create({
-  container: { padding: 20, paddingTop: 60, backgroundColor: '#0f1020', minHeight: '100%' },
+  container: { padding: 20, paddingTop: 60, minHeight: '100%' },
   title: { color: '#fff', fontSize: 30, fontWeight: '800', marginBottom: 16 },
-  verdict: { backgroundColor: '#1c1d33', borderRadius: 12, padding: 16, marginBottom: 20 },
+  verdict: { backgroundColor: 'rgba(28,10,58,0.94)', borderRadius: 12, padding: 16, marginBottom: 20 },
   winner: { color: '#ffb703', fontSize: 24, fontWeight: '800', marginBottom: 8 },
   analysis: { color: '#dde', fontSize: 15, lineHeight: 22 },
   team: { marginBottom: 24 },
   player: { color: '#ffb703', fontSize: 18, fontWeight: '700', marginBottom: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#1c1d33', borderRadius: 10, padding: 8, marginBottom: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(28,10,58,0.94)', borderRadius: 10, padding: 8, marginBottom: 8 },
   img: { width: 70, height: 70 },
   name: { color: '#fff', fontSize: 16, fontWeight: '700' },
   summary: { color: '#aab', fontSize: 13, marginTop: 2 },
-  input: { backgroundColor: '#1c1d33', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
+  input: { backgroundColor: 'rgba(28,10,58,0.94)', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
   error: { color: '#ff6b6b', textAlign: 'center', marginBottom: 12 },
   btn: { backgroundColor: '#e63946', padding: 18, borderRadius: 12, alignItems: 'center', marginTop: 8 },
   btnText: { color: '#fff', fontSize: 18, fontWeight: '700' },

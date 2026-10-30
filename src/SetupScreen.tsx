@@ -69,13 +69,13 @@ export default function SetupScreen({
 }
 
 const s = StyleSheet.create({
-  container: { padding: 20, paddingTop: 70, backgroundColor: '#0f1020', minHeight: '100%' },
+  container: { padding: 20, paddingTop: 70, minHeight: '100%' },
   back: { color: '#ffb703', fontSize: 15, marginBottom: 16 },
   title: { color: '#fff', fontSize: 34, fontWeight: '800', marginBottom: 12 },
-  label: { color: '#aab', fontSize: 14, marginTop: 20, marginBottom: 8, textTransform: 'uppercase' },
-  input: { backgroundColor: '#1c1d33', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
+  label: { color: '#e6dcff', fontWeight: '700', textShadowColor: '#000', textShadowRadius: 4, fontSize: 14, marginTop: 20, marginBottom: 8, textTransform: 'uppercase' },
+  input: { backgroundColor: 'rgba(28,10,58,0.94)', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 20, backgroundColor: '#1c1d33' },
+  chip: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 20, backgroundColor: 'rgba(28,10,58,0.94)' },
   chipActive: { backgroundColor: '#ffb703' },
   chipText: { color: '#ccd' },
   chipTextActive: { color: '#000', fontWeight: '700' },

@@ -1,101 +1,48 @@
-import { useState } from 'react';
-import { Image, StyleSheet, Text, TextStyle, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-// Logos desde Wikimedia Commons. Si alguno no carga, se muestra el nombre con la tipografía temática.
-const logo = (file: string) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=600`;
 
 type Theme = {
   title: string;
   gradient: [string, string, ...string[]];
-  text: TextStyle;
-  logo: string;
-  logoLocal?: number; // logo incluido en la app (assets/logos); tiene prioridad sobre el remoto
-  logoTint?: string; // colorea el logo si el original no contrasta con el fondo
+  logo: number; // logo oficial incluido en assets/logos
   Decor: (p: { height: number }) => React.ReactElement;
 };
 
 export const THEMES: Record<string, Theme> = {
-  starwars: {
-    title: 'STAR WARS',
-    gradient: ['#000000', '#05051a', '#0d0d2b'],
-    text: {
-      fontFamily: 'Orbitron_900Black',
-      fontSize: 34,
-      color: '#ffe81f',
-      letterSpacing: 4,
-      textShadowColor: 'rgba(255,232,31,0.6)',
-      textShadowRadius: 12,
-    },
-    logo: logo('Star_Wars_Logo.svg'),
-    logoLocal: require('../assets/logos/starwars.png'),
-    logoTint: '#ffe81f',
-    Decor: Stars,
-  },
   onepiece: {
     title: 'One Piece',
     gradient: ['#fff3d6', '#f1d9a7', '#d9b77a'],
-    text: {
-      fontFamily: 'PirataOne_400Regular',
-      fontSize: 48,
-      color: '#ffd54f',
-      textShadowColor: '#4e2a04',
-      textShadowOffset: { width: 2, height: 3 },
-      textShadowRadius: 1,
-    },
-    logo: logo('One_Piece_Logo.svg'),
-    logoLocal: require('../assets/logos/onepiece.png'),
+    logo: require('../assets/logos/onepiece.png'),
     Decor: Sea,
   },
   naruto: {
-    title: 'NARUTO',
-    gradient: ['#ffa726', '#f57c00', '#e65100'],
-    text: {
-      fontFamily: 'Bangers_400Regular',
-      fontSize: 52,
-      letterSpacing: 2,
-      color: '#ffffff',
-      textShadowColor: '#1a237e',
-      textShadowOffset: { width: 3, height: 3 },
-      textShadowRadius: 1,
-    },
-    logo: logo('Naruto_logo.svg'),
-    logoTint: '#ffffff',
-    Decor: Leaf,
+    title: 'Naruto',
+    gradient: ['#0f3d1e', '#1b5e20', '#2e7d32'],
+    logo: require('../assets/logos/naruto.png'),
+    Decor: Leaves,
   },
   dragonball: {
-    title: 'DRAGON BALL',
-    gradient: ['#64b5f6', '#1e88e5', '#0d47a1'],
-    text: {
-      fontFamily: 'LuckiestGuy_400Regular',
-      fontSize: 34,
-      color: '#ffeb3b',
-      textShadowColor: '#c62828',
-      textShadowOffset: { width: 3, height: 3 },
-      textShadowRadius: 1,
-    },
-    logo: logo('Dragon_Ball_Z_logo.svg'),
-    Decor: DragonBallDecor,
+    title: 'Dragon Ball',
+    gradient: ['#81d4fa', '#29b6f6', '#0277bd'],
+    logo: require('../assets/logos/dragonball.png'),
+    Decor: Clouds,
+  },
+  starwars: {
+    title: 'Star Wars',
+    gradient: ['#000000', '#05051a', '#0d0d2b'],
+    logo: require('../assets/logos/starwars.png'),
+    Decor: Stars,
   },
   pokemon: {
     title: 'Pokémon',
-    gradient: ['#3b82f6', '#1d4ed8', '#1e3a8a'],
-    text: {
-      fontFamily: 'LuckiestGuy_400Regular',
-      fontSize: 42,
-      color: '#ffcb05',
-      textShadowColor: '#0b1f5c',
-      textShadowOffset: { width: 3, height: 3 },
-      textShadowRadius: 1,
-    },
-    logo: logo('International_Pokémon_logo.svg'),
+    gradient: ['#ff5252', '#e53935', '#b71c1c'],
+    logo: require('../assets/logos/pokemon.png'),
     Decor: Pokeball,
   },
 };
 
 export default function FranchiseBanner({ id, height = 120 }: { id: string; height?: number }) {
   const theme = THEMES[id];
-  const [logoOk, setLogoOk] = useState(false);
   if (!theme) return null;
   const { Decor } = theme;
 
@@ -103,20 +50,12 @@ export default function FranchiseBanner({ id, height = 120 }: { id: string; heig
     <LinearGradient colors={theme.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[s.banner, { height }]}>
       <Decor height={height} />
       <View style={s.content}>
-        {theme.logoLocal ? (
-          <Image source={theme.logoLocal} style={{ width: '68%', height: height * 0.7 }} resizeMode="contain" />
-        ) : (
-          <>
-            {!logoOk && <Text style={theme.text}>{theme.title}</Text>}
-            <Image
-              source={{ uri: theme.logo }}
-              style={logoOk ? { width: '62%', height: height * 0.62, tintColor: theme.logoTint } : s.hidden}
-              resizeMode="contain"
-              onLoad={() => setLogoOk(true)}
-              onError={() => setLogoOk(false)}
-            />
-          </>
-        )}
+        <Image
+          source={theme.logo}
+          accessibilityLabel={theme.title}
+          style={{ width: '70%', height: height * 0.72 }}
+          resizeMode="contain"
+        />
       </View>
     </LinearGradient>
   );
@@ -176,36 +115,54 @@ function Sea({ height }: { height: number }) {
   );
 }
 
-function Leaf({ height }: { height: number }) {
+function Leaves({ height }: { height: number }) {
+  const rnd = seeded(3);
   return (
     <View style={StyleSheet.absoluteFill}>
-      <Text style={[s.bigEmoji, { right: -10, top: height * 0.05, fontSize: height * 0.8, opacity: 0.25 }]}>🍥</Text>
+      {Array.from({ length: 9 }, (_, i) => (
+        <Text
+          key={i}
+          style={[
+            s.bigEmoji,
+            {
+              left: `${8 + rnd() * 88}%`,
+              top: rnd() * height * 0.8,
+              fontSize: 14 + rnd() * 18,
+              opacity: 0.35,
+              transform: [{ rotate: `${Math.round(rnd() * 360)}deg` }],
+            },
+          ]}
+        >
+          🍃
+        </Text>
+      ))}
     </View>
   );
 }
 
-function DragonBallDecor({ height }: { height: number }) {
-  const size = height * 0.8;
-  return (
-    <View style={StyleSheet.absoluteFill}>
-      <LinearGradient
-        colors={['#ffe0a3', '#ffb300', '#ef6c00']}
-        start={{ x: 0.2, y: 0.1 }}
-        end={{ x: 0.9, y: 1 }}
+function Clouds({ height }: { height: number }) {
+  const cloud = (left: string, top: number, w: number, o: number) => (
+    <View key={left + top} style={{ position: 'absolute', left: left as any, top, opacity: o }}>
+      <View style={{ width: w, height: w * 0.35, borderRadius: w, backgroundColor: '#fff', marginTop: w * 0.18 }} />
+      <View
         style={{
           position: 'absolute',
-          right: 18,
-          top: (height - size) / 2,
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: 0.9,
+          left: w * 0.22,
+          top: 0,
+          width: w * 0.45,
+          height: w * 0.4,
+          borderRadius: w,
+          backgroundColor: '#fff',
         }}
-      >
-        <Text style={{ color: '#d32f2f', fontSize: size * 0.22, letterSpacing: -2 }}>★★{'\n'}★★</Text>
-      </LinearGradient>
+      />
+    </View>
+  );
+  return (
+    <View style={StyleSheet.absoluteFill}>
+      {cloud('-6%', height * 0.62, 130, 0.55)}
+      {cloud('62%', height * 0.08, 110, 0.45)}
+      {cloud('78%', height * 0.6, 120, 0.6)}
+      {cloud('35%', height * 0.78, 90, 0.35)}
     </View>
   );
 }
@@ -224,14 +181,14 @@ function Pokeball({ height }: { height: number }) {
           height: size,
           borderRadius: size / 2,
           overflow: 'hidden',
-          opacity: 0.9,
+          opacity: 0.22,
           borderWidth: band / 2,
-          borderColor: '#111',
+          borderColor: '#fff',
         }}
       >
-        <View style={{ flex: 1, backgroundColor: '#e53935' }} />
-        <View style={{ height: band, backgroundColor: '#111' }} />
-        <View style={{ flex: 1, backgroundColor: '#fafafa' }} />
+        <View style={{ flex: 1 }} />
+        <View style={{ height: band, backgroundColor: '#fff' }} />
+        <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.5)' }} />
         <View
           style={{
             position: 'absolute',
@@ -240,9 +197,8 @@ function Pokeball({ height }: { height: number }) {
             width: size * 0.34,
             height: size * 0.34,
             borderRadius: size,
-            backgroundColor: '#fafafa',
             borderWidth: band,
-            borderColor: '#111',
+            borderColor: '#fff',
           }}
         />
       </View>
@@ -253,6 +209,5 @@ function Pokeball({ height }: { height: number }) {
 const s = StyleSheet.create({
   banner: { borderRadius: 18, overflow: 'hidden', justifyContent: 'center' },
   content: { paddingHorizontal: 22 },
-  hidden: { position: 'absolute', width: 1, height: 1, opacity: 0 },
   bigEmoji: { position: 'absolute' },
 });

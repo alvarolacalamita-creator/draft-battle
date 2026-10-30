@@ -107,10 +107,10 @@ export default function AuctionScreen({
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, padding: 20, paddingTop: 60, alignItems: 'center', backgroundColor: '#0f1020' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: '#0f1020' },
+  container: { flex: 1, padding: 20, paddingTop: 60, alignItems: 'center' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   scoreRow: { flexDirection: 'row', gap: 12, marginBottom: 16, width: '100%' },
-  score: { flex: 1, backgroundColor: '#1c1d33', borderRadius: 12, padding: 12, borderWidth: 2, borderColor: 'transparent' },
+  score: { flex: 1, backgroundColor: 'rgba(28,10,58,0.94)', borderRadius: 12, padding: 12, borderWidth: 2, borderColor: 'transparent' },
   scoreActive: { borderColor: '#ffb703' },
   playerName: { color: '#fff', fontWeight: '700', fontSize: 16 },
   coins: { color: '#ffb703', fontSize: 22, fontWeight: '800' },

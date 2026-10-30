@@ -2,7 +2,7 @@ import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import FranchiseBanner from './FranchiseBanner';
 import { FRANCHISES, Franchise } from './franchises';
 
-export const APP_VERSION = '6';
+export const APP_VERSION = '7';
 
 export default function CategoryScreen({ onPick }: { onPick: (f: Franchise) => void }) {
   return (
@@ -24,7 +24,7 @@ export default function CategoryScreen({ onPick }: { onPick: (f: Franchise) => v
 }
 
 const s = StyleSheet.create({
-  container: { padding: 20, paddingTop: 64, backgroundColor: '#0f1020', minHeight: '100%' },
+  container: { padding: 20, paddingTop: 64, minHeight: '100%' },
   title: {
     fontFamily: 'Bangers_400Regular',
     color: '#ffb703',
