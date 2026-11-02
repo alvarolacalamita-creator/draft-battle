@@ -2,7 +2,7 @@ import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import FranchiseBanner from './FranchiseBanner';
 import { FRANCHISES, Franchise } from './franchises';
 
-export const APP_VERSION = '7';
+export const APP_VERSION = '8';
 
 export default function CategoryScreen({ onPick }: { onPick: (f: Franchise) => void }) {
   return (
