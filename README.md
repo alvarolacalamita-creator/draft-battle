@@ -6,11 +6,12 @@ Web/app: https://alvarolacalamita-creator.github.io/draft-battle/
 
 ## Prueba de ChatGPT (reversible)
 
-El botón "Valorar con ChatGPT" de la pantalla de resultados es una prueba. Todo ese cambio está en un único
-commit marcado con la etiqueta `chatgpt-prueba`; el estado justo anterior está marcado como `antes-de-chatgpt`.
+El botón "Valorar con ChatGPT" de la pantalla de resultados es una prueba. Todos los commits de esa prueba
+llevan la palabra clave `chatgpt-prueba` en su mensaje, y no tocan nada más (el cálculo automático de Pokémon
+va en un commit aparte).
 
-Para quitarlo sin tocar nada más (incluido el cálculo automático de Pokémon):
+Para quitarla y dejar la app como estaba antes:
 
 ```bash
-git revert --no-edit chatgpt-prueba && git push origin main
+git revert --no-edit $(git log --format=%h --grep=chatgpt-prueba main) && git push origin main
 ```
