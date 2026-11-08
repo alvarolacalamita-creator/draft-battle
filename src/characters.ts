@@ -94,6 +94,24 @@ function sample<T>(items: T[], n: number): T[] {
   return copy.slice(0, n);
 }
 
+const STAT_KEYS: Record<string, string> = {
+  hp: 'hp',
+  attack: 'atk',
+  defense: 'def',
+  'special-attack': 'spa',
+  'special-defense': 'spd',
+  speed: 'spe',
+};
+
+function pokemonStats(raw: any[]): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const s of raw ?? []) {
+    const key = STAT_KEYS[s.stat?.name];
+    if (key) out[key] = s.base_stat;
+  }
+  return out;
+}
+
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Devuelve `count` personajes aleatorios de la franquicia, con nombre y foto. */
@@ -112,6 +130,7 @@ export async function fetchCharacters(f: Franchise, count = 8): Promise<Characte
         name: cap(p.name),
         image: p.sprites.other['official-artwork'].front_default ?? p.sprites.front_default,
         tags: (p.types as any[]).sort((a, b) => a.slot - b.slot).map((t) => t.type.name as string),
+        stats: pokemonStats(p.stats),
       }));
     }
     case 'starwars': {

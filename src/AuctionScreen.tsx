@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Auction, canBid, pass, PlayerIdx, raise, startAuction } from './auction';
 import { fetchCharacters } from './characters';
+import { statLine } from './pokemonBattle';
 import { typeLabel } from './pokemonTypes';
 import type { GameConfig } from './SetupScreen';
 import TagChips from './TagChips';
@@ -86,6 +87,7 @@ export default function AuctionScreen({
       <View style={{ marginTop: 8 }}>
         <TagChips tags={current.tags} />
       </View>
+      {current.stats && <Text style={s.statsLine}>{statLine(current)}</Text>}
 
       <Text style={s.bid}>{auction.bid > 0 ? `Puja: ${auction.bid} 🪙 · ${leaderName}` : 'Sin pujas todavía'}</Text>
       <Text style={s.small}>Turno de {turnName}</Text>
@@ -114,6 +116,7 @@ const s = StyleSheet.create({
   scoreActive: { borderColor: '#ffb703' },
   playerName: { color: '#fff', fontWeight: '700', fontSize: 16 },
   coins: { color: '#ffb703', fontSize: 22, fontWeight: '800' },
+  statsLine: { color: '#c9b8ff', fontSize: 12, marginTop: 8, textAlign: 'center' },
   pick: { color: '#ccd', fontSize: 11, marginTop: 2 },
   image: { width: '100%', flex: 1, marginVertical: 12 },
   title: { color: '#fff', fontSize: 28, fontWeight: '800', textAlign: 'center' },

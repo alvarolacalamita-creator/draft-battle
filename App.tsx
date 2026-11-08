@@ -30,7 +30,7 @@ export default function App() {
       <StatusBar style="light" />
       <ArcadeBackground />
       {result && config ? (
-        <ResultsScreen auction={result} franchiseName={config.franchise.name} onNewGame={reset} />
+        <ResultsScreen auction={result} franchise={config.franchise} onNewGame={reset} />
       ) : config ? (
         <AuctionScreen config={config} onFinish={setResult} />
       ) : franchise ? (
