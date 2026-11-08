@@ -4,6 +4,7 @@ import type { Auction } from './auction';
 import type { Franchise } from './franchises';
 import { pokemonVerdict, statLine } from './pokemonBattle';
 import TagChips from './TagChips';
+import { buildChatGptPrompt, openChatGpt } from './chatgpt';
 import { getStoredKey, getVerdict, saveKey, Verdict } from './verdict';
 
 export default function ResultsScreen({
@@ -105,6 +106,14 @@ export default function ResultsScreen({
           </Pressable>
         )
       )}
+      {/* PRUEBA ChatGPT: valoración gratuita fuera de la app */}
+      <Pressable style={[s.btn, s.btnChatGpt]} onPress={() => openChatGpt(buildChatGptPrompt(franchiseName, auction))}>
+        <Text style={s.btnText}>💬 Valorar con ChatGPT (gratis)</Text>
+      </Pressable>
+      <Text style={s.hint}>
+        Se abre ChatGPT con la pregunta ya escrita. Si aparece vacío, pégala: ya está copiada.
+      </Text>
+
       <Pressable onPress={onNewGame}>
         <Text style={s.link}>Nueva partida</Text>
       </Pressable>
@@ -129,6 +138,8 @@ const s = StyleSheet.create({
   input: { backgroundColor: 'rgba(28,10,58,0.94)', color: '#fff', padding: 14, borderRadius: 10, marginBottom: 10, fontSize: 16 },
   error: { color: '#ff6b6b', textAlign: 'center', marginBottom: 12 },
   btn: { backgroundColor: '#e63946', padding: 18, borderRadius: 12, alignItems: 'center', marginTop: 8 },
+  btnChatGpt: { backgroundColor: '#10a37f', marginTop: 16 },
+  hint: { color: '#aab', fontSize: 12, textAlign: 'center', marginTop: 6 },
   btnText: { color: '#fff', fontSize: 18, fontWeight: '700' },
   link: { color: '#ffb703', textAlign: 'center', marginTop: 20, fontSize: 16 },
 });
